@@ -1,36 +1,62 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import type { User } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
+import { Sparkles, LogOut, User as UserIcon, Coins } from "lucide-react";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Navbar = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
+  const [credits, setCredits] = useState<number>(0);
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadCredits(session.user.id);
+      }
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        loadCredits(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const loadCredits = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_credits")
+        .select("daily_credits")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      setCredits(data?.daily_credits || 0);
+    } catch (error) {
+      console.error("Error loading credits:", error);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "You've been successfully signed out.",
-    });
+    toast.success("Signed out successfully");
     navigate("/");
   };
 
@@ -39,8 +65,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="rounded-lg bg-gradient-primary p-2">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <div className="rounded-lg gradient-primary p-2">
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold gradient-text">PromptSite</span>
           </Link>
@@ -48,22 +74,45 @@ export const Navbar = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Link to="/builder">
-                  <Button variant="ghost">Builder</Button>
-                </Link>
-                <Button variant="outline" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                <Button variant="ghost" onClick={() => navigate("/builder")}>
+                  Builder
                 </Button>
+                
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/40 bg-primary/10">
+                  <Coins className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">{credits} credits</span>
+                </div>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src="" />
+                        <AvatarFallback>
+                          <UserIcon className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      Profile Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <>
-                <Link to="/auth">
-                  <Button variant="ghost">Sign In</Button>
-                </Link>
-                <Link to="/auth">
-                  <Button className="gradient-primary">Get Started</Button>
-                </Link>
+                <Button variant="ghost" onClick={() => navigate("/auth")}>
+                  Sign In
+                </Button>
+                <Button onClick={() => navigate("/auth")}>Get Started</Button>
               </>
             )}
           </div>

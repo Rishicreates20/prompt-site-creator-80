@@ -1,17 +1,35 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Palette, Type, Layout, Image } from "lucide-react";
+import { Palette, Type, Layout, Sparkles } from "lucide-react";
+import { MediaUpload } from "./MediaUpload";
 
 interface CustomizationPanelProps {
   onCustomize: (type: string, value: any) => void;
 }
 
 export const CustomizationPanel = ({ onCustomize }: CustomizationPanelProps) => {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  const handleMediaUpload = (files: File[]) => {
+    setUploadedFiles([...uploadedFiles, ...files]);
+    onCustomize("media", [...uploadedFiles, ...files]);
+  };
+
+  const handleMediaRemove = (index: number) => {
+    const newFiles = uploadedFiles.filter((_, i) => i !== index);
+    setUploadedFiles(newFiles);
+    onCustomize("media", newFiles);
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Customize Your Site</h3>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Customize Your Site
+        </h3>
       </div>
 
       {/* Colors */}
@@ -104,12 +122,16 @@ export const CustomizationPanel = ({ onCustomize }: CustomizationPanelProps) => 
         </div>
       </div>
 
-      {/* Sections */}
+      {/* Media Upload */}
+      <MediaUpload
+        onUpload={handleMediaUpload}
+        uploadedFiles={uploadedFiles}
+        onRemove={handleMediaRemove}
+      />
+
+      {/* Add Sections */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Image className="h-4 w-4 text-primary" />
-          <Label className="text-sm font-medium">Add Sections</Label>
-        </div>
+        <Label className="text-sm font-medium">Add Sections</Label>
         <div className="space-y-2">
           <Button
             variant="outline"
