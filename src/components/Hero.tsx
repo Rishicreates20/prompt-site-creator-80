@@ -20,18 +20,18 @@ export const Hero = () => {
 
           {/* Main heading */}
           <h1 className="text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-            Build Your Dream{" "}
+            Build & Publish Your{" "}
             <span className="gradient-text inline-block animate-shimmer bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%]">
               E-Commerce Site
             </span>
             <br />
-            With Just a Prompt
+            Without Coding
           </h1>
 
           {/* Description */}
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-            No coding. No design skills. Just describe your vision and watch as AI creates
-            a fully functional, customizable e-commerce website in seconds.
+            Full administrative control, robust security, and intuitive design tools.
+            Customize, manage, and publish your online store with complete freedom.
           </p>
 
           {/* CTA buttons */}

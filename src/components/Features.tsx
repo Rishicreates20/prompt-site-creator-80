@@ -1,25 +1,35 @@
-import { Zap, Palette, Code, Globe } from "lucide-react";
+import { Zap, Palette, Settings, Rocket, Shield, Sparkles } from "lucide-react";
 
 const features = [
   {
     icon: Zap,
-    title: "Lightning Fast",
-    description: "Generate complete e-commerce websites in under 30 seconds with our advanced AI."
+    title: "No Coding Required",
+    description: "Build and customize your e-commerce website with AI-powered tools. Just describe what you want and watch it come to life."
+  },
+  {
+    icon: Settings,
+    title: "Full Admin Control",
+    description: "Complete control over settings, content management, and ongoing updates. Your website, your rules."
+  },
+  {
+    icon: Shield,
+    title: "Robust Security",
+    description: "Enterprise-grade security with protected data, secure transactions, and reliable infrastructure you can trust."
   },
   {
     icon: Palette,
-    title: "Fully Customizable",
-    description: "Tweak colors, fonts, layouts, and content - all through simple prompts or visual controls."
+    title: "Built-in Design Tools",
+    description: "Customize and style your website using intuitive design tools. Change colors, layouts, and content on the fly."
   },
   {
-    icon: Code,
-    title: "No Code Required",
-    description: "Built for non-technical users. Just describe what you want in plain English."
+    icon: Rocket,
+    title: "Easy Publishing",
+    description: "Publish your website with one click. No technical knowledge needed to get your store online."
   },
   {
-    icon: Globe,
-    title: "Instant Publishing",
-    description: "Your site goes live immediately with hosting, domain, and SSL included."
+    icon: Sparkles,
+    title: "Intuitive UI/UX",
+    description: "User-friendly interface designed for everyone. Manage your entire e-commerce operation effortlessly."
   }
 ];
 
@@ -36,7 +46,7 @@ export const Features = () => {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
             <div
               key={index}
