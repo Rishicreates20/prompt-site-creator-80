@@ -46,9 +46,12 @@ All colors MUST be HSL.
     /* Shadows */
     --shadow-glow: 0 0 80px hsl(263 70% 50% / 0.3);
     --shadow-soft: 0 10px 40px hsl(240 10% 3% / 0.5);
+    --shadow-card: 0 4px 20px hsl(240 10% 3% / 0.3);
+    --shadow-card-hover: 0 8px 30px hsl(263 70% 50% / 0.2);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 }
 
@@ -86,6 +89,26 @@ All colors MUST be HSL.
 
   .animate-glow {
     animation: glow 3s ease-in-out infinite;
+  }
+
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.1),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
   }
 }
 

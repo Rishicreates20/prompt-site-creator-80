@@ -40,13 +40,25 @@ export const Features = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative rounded-2xl border border-border/40 bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg"
+              className="group relative rounded-2xl border border-border/40 bg-card p-6 transition-all duration-300 hover:border-primary/50 hover-lift animate-fade-in"
+              style={{ 
+                animationDelay: `${index * 0.1}s`,
+                animationFillMode: 'backwards'
+              }}
             >
-              <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
-                <feature.icon className="h-6 w-6 text-primary" />
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              
+              <div className="relative z-10">
+                <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/20">
+                  <feature.icon className="h-6 w-6 text-primary transition-transform duration-300 group-hover:rotate-6" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold transition-colors duration-300 group-hover:text-primary">{feature.title}</h3>
+                <p className="text-muted-foreground transition-colors duration-300 group-hover:text-foreground/80">{feature.description}</p>
               </div>
-              <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
+
+              {/* Shimmer effect on hover */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 shimmer" />
             </div>
           ))}
         </div>
