@@ -31,14 +31,38 @@ serve(async (req) => {
       throw new Error('Not authenticated');
     }
 
-    // Check and deduct credits
-    const { data: credits, error: creditsError } = await supabase
+    // Check and deduct credits (initialize if missing)
+    const { data: creditsRow, error: creditsError } = await supabase
       .from('user_credits')
       .select('daily_credits')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
-    if (creditsError || !credits || credits.daily_credits <= 0) {
+    if (creditsError) {
+      console.error('Credits fetch error:', creditsError);
+    }
+
+    let availableCredits = creditsRow?.daily_credits ?? null;
+
+    if (availableCredits === null) {
+      // Initialize credits for first-time users
+      const { data: inserted, error: insertError } = await supabase
+        .from('user_credits')
+        .insert({ user_id: user.id, daily_credits: 10 })
+        .select('daily_credits')
+        .single();
+
+      if (insertError) {
+        console.error('Credits init error:', insertError);
+        return new Response(
+          JSON.stringify({ error: 'Unable to initialize credits' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      availableCredits = inserted.daily_credits;
+    }
+
+    if ((availableCredits ?? 0) <= 0) {
       return new Response(
         JSON.stringify({ error: 'Insufficient credits' }),
         { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -46,10 +70,18 @@ serve(async (req) => {
     }
 
     // Deduct one credit
-    await supabase
+    const { error: deductError } = await supabase
       .from('user_credits')
-      .update({ daily_credits: credits.daily_credits - 1 })
+      .update({ daily_credits: (availableCredits as number) - 1 })
       .eq('user_id', user.id);
+
+    if (deductError) {
+      console.error('Credit deduction error:', deductError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to deduct credit. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
