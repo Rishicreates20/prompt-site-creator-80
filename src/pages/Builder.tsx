@@ -19,6 +19,14 @@ const Builder = () => {
   const [generatedHTML, setGeneratedHTML] = useState("");
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [user, setUser] = useState<any>(null);
+  const [storeData, setStoreData] = useState({
+    storeName: "Your Store Name",
+    products: [
+      { id: 1, name: "Product 1", description: "Premium quality product description", price: 29.99, images: {} },
+      { id: 2, name: "Product 2", description: "Premium quality product description", price: 59.98, images: {} },
+      { id: 3, name: "Product 3", description: "Premium quality product description", price: 89.97, images: {} },
+    ],
+  });
 
   useEffect(() => {
     checkAuth();
@@ -146,7 +154,11 @@ const Builder = () => {
           
           {hasGenerated && (
             <div className="border-t border-border/40 pt-6">
-              <CustomizationPanel onCustomize={handleCustomize} />
+              <CustomizationPanel 
+                onCustomize={handleCustomize}
+                storeData={storeData}
+                onStoreDataChange={setStoreData}
+              />
             </div>
           )}
         </div>
@@ -156,7 +168,7 @@ const Builder = () => {
           <PreviewPanel
             isGenerating={isGenerating}
             generatedContent={
-              hasGenerated ? <GeneratedSite customization={customization} /> : null
+              hasGenerated ? <GeneratedSite customization={customization} storeData={storeData} /> : null
             }
           />
         </div>

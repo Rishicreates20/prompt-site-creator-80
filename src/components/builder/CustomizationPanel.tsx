@@ -4,12 +4,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Palette, Type, Layout, Sparkles } from "lucide-react";
 import { MediaUpload } from "./MediaUpload";
+import { ProductEditor, type StoreData } from "./ProductEditor";
 
 interface CustomizationPanelProps {
   onCustomize: (type: string, value: any) => void;
+  storeData: StoreData;
+  onStoreDataChange: (data: StoreData) => void;
 }
 
-export const CustomizationPanel = ({ onCustomize }: CustomizationPanelProps) => {
+export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange }: CustomizationPanelProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const handleMediaUpload = (files: File[]) => {
@@ -31,6 +34,9 @@ export const CustomizationPanel = ({ onCustomize }: CustomizationPanelProps) => 
           Customize Your Site
         </h3>
       </div>
+
+      {/* Product Editor */}
+      <ProductEditor storeData={storeData} onChange={onStoreDataChange} />
 
       {/* Colors */}
       <div className="space-y-3">
