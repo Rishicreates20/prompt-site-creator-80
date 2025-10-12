@@ -1,1 +1,4 @@
 project_id = "cngpcfblyslwejcdglhx"
+
+[functions.generate-website]
+verify_jwt = true
