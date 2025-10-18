@@ -9,6 +9,7 @@ interface GeneratedSiteProps {
     accentColor?: string;
     font?: string;
     layout?: string;
+    paymentsEnabled?: boolean;
   };
   storeData?: StoreData;
 }
@@ -16,6 +17,7 @@ interface GeneratedSiteProps {
 export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) => {
   const primaryColor = customization?.primaryColor || "#8b5cf6";
   const accentColor = customization?.accentColor || "#3b82f6";
+  const paymentsEnabled = customization?.paymentsEnabled || false;
   const storeName = storeData?.storeName || "Your Store Name";
   const products = storeData?.products || [
     { id: 1, name: "Product 1", description: "Premium quality product description", price: 29.99, images: {} },
@@ -24,6 +26,10 @@ export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) 
   ];
 
   const [selectedImages, setSelectedImages] = useState<Record<number, keyof typeof products[0]["images"]>>({});
+
+  const handlePayment = (productId: number, productName: string, price: number) => {
+    alert(`Payment initiated for ${productName} - ₹${price.toFixed(2)}\n\n(This is a demo payment gateway)`);
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -132,17 +138,30 @@ export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) 
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold" style={{ color: primaryColor }}>
-                      ${product.price.toFixed(2)}
+                      ₹{product.price.toFixed(2)}
                     </span>
-                    <Button 
-                      size="sm"
-                      style={{ 
-                        backgroundColor: accentColor,
-                        color: 'white'
-                      }}
-                    >
-                      Add to Cart
-                    </Button>
+                    {paymentsEnabled ? (
+                      <Button 
+                        size="sm"
+                        style={{ 
+                          backgroundColor: accentColor,
+                          color: 'white'
+                        }}
+                        onClick={() => handlePayment(product.id, product.name, product.price)}
+                      >
+                        Buy Now
+                      </Button>
+                    ) : (
+                      <Button 
+                        size="sm"
+                        style={{ 
+                          backgroundColor: accentColor,
+                          color: 'white'
+                        }}
+                      >
+                        Add to Cart
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

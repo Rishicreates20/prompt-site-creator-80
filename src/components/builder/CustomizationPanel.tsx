@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Palette, Type, Layout, Sparkles } from "lucide-react";
+import { Palette, Type, Layout, Sparkles, CreditCard } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { MediaUpload } from "./MediaUpload";
 import { ProductEditor, type StoreData } from "./ProductEditor";
 
@@ -134,6 +135,20 @@ export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange }
         uploadedFiles={uploadedFiles}
         onRemove={handleMediaRemove}
       />
+
+      {/* Payment Gateway */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-4 w-4 text-primary" />
+          <Label className="text-sm font-medium">Payment Gateway</Label>
+        </div>
+        <div className="flex items-center justify-between">
+          <Label className="text-xs text-muted-foreground">Enable Payments</Label>
+          <Switch
+            onCheckedChange={(checked) => onCustomize("paymentsEnabled", checked)}
+          />
+        </div>
+      </div>
 
       {/* Add Sections */}
       <div className="space-y-3">
