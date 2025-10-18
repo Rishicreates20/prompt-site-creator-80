@@ -4,6 +4,7 @@ import { PreviewPanel } from "@/components/builder/PreviewPanel";
 import { CustomizationPanel } from "@/components/builder/CustomizationPanel";
 import { GeneratedSite } from "@/components/builder/GeneratedSite";
 import { ModelSelector } from "@/components/builder/ModelSelector";
+import { TemplateSelector } from "@/components/builder/TemplateSelector";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Builder = () => {
   const navigate = useNavigate();
+  const [showTemplates, setShowTemplates] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [customization, setCustomization] = useState({});
@@ -81,6 +83,18 @@ const Builder = () => {
     }
   };
 
+  const handleSelectTemplate = (template: any) => {
+    setCustomization(template.customization || {});
+    setStoreData(template.store_data || storeData);
+    setShowTemplates(false);
+    setHasGenerated(true);
+    toast.success(`${template.name} template applied!`);
+  };
+
+  const handleSkipTemplates = () => {
+    setShowTemplates(false);
+  };
+
   const handleCustomize = (type: string, value: any) => {
     setCustomization((prev) => ({ ...prev, [type]: value }));
     toast.success("Customization applied!");
@@ -146,33 +160,42 @@ const Builder = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar - Prompt & Customization */}
-        <div className="w-80 border-r border-border/40 overflow-y-auto p-6 space-y-6">
-          <ModelSelector value={selectedModel} onChange={setSelectedModel} />
-          <PromptInput onGenerate={handleGenerate} isGenerating={isGenerating} />
-          
-          {hasGenerated && (
-            <div className="border-t border-border/40 pt-6">
-              <CustomizationPanel 
-                onCustomize={handleCustomize}
-                storeData={storeData}
-                onStoreDataChange={setStoreData}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Center - Preview */}
-        <div className="flex-1">
-          <PreviewPanel
-            isGenerating={isGenerating}
-            generatedContent={
-              hasGenerated ? <GeneratedSite customization={customization} storeData={storeData} /> : null
-            }
+      {showTemplates ? (
+        <div className="flex-1 overflow-y-auto">
+          <TemplateSelector 
+            onSelectTemplate={handleSelectTemplate}
+            onSkip={handleSkipTemplates}
           />
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-1 overflow-hidden">
+          {/* Left Sidebar - Prompt & Customization */}
+          <div className="w-80 border-r border-border/40 overflow-y-auto p-6 space-y-6">
+            <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+            <PromptInput onGenerate={handleGenerate} isGenerating={isGenerating} />
+            
+            {hasGenerated && (
+              <div className="border-t border-border/40 pt-6">
+                <CustomizationPanel 
+                  onCustomize={handleCustomize}
+                  storeData={storeData}
+                  onStoreDataChange={setStoreData}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Center - Preview */}
+          <div className="flex-1">
+            <PreviewPanel
+              isGenerating={isGenerating}
+              generatedContent={
+                hasGenerated ? <GeneratedSite customization={customization} storeData={storeData} /> : null
+              }
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

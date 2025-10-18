@@ -77,6 +77,51 @@ export type Database = {
         }
         Relationships: []
       }
+      templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          customization: Json | null
+          description: string | null
+          html_content: string
+          id: string
+          is_public: boolean | null
+          name: string
+          store_data: Json | null
+          thumbnail_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          customization?: Json | null
+          description?: string | null
+          html_content: string
+          id?: string
+          is_public?: boolean | null
+          name: string
+          store_data?: Json | null
+          thumbnail_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          customization?: Json | null
+          description?: string | null
+          html_content?: string
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          store_data?: Json | null
+          thumbnail_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           created_at: string
