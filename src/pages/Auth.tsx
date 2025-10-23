@@ -110,7 +110,7 @@ export default function Auth() {
         }
         
         toast.success("Welcome back!");
-        navigate("/");
+        navigate("/builder");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -132,10 +132,9 @@ export default function Auth() {
         }
         
         toast.success("Account created! Welcome!");
-        navigate("/");
+        navigate("/builder");
       }
     } catch (error: any) {
-      console.error("Auth error:", error);
       toast.error(error.message || "Authentication failed");
     } finally {
       setLoading(false);
@@ -153,7 +152,6 @@ export default function Auth() {
 
       if (error) throw error;
     } catch (error: any) {
-      console.error("Google auth error:", error);
       toast.error(error.message || "Failed to sign in with Google");
     }
   };

@@ -15,6 +15,28 @@ serve(async (req) => {
   try {
     const { prompt, model = "google/gemini-2.5-flash" } = await req.json();
     
+    // Input validation
+    if (!prompt || typeof prompt !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid prompt' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (prompt.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: 'Prompt must be 2000 characters or less' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (prompt.trim().length < 10) {
+      return new Response(
+        JSON.stringify({ error: 'Prompt must be at least 10 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
@@ -39,7 +61,10 @@ serve(async (req) => {
       .maybeSingle();
 
     if (creditsError) {
-      console.error('Credits fetch error:', creditsError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to check credits' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     let availableCredits = creditsRow?.daily_credits ?? null;
@@ -53,7 +78,6 @@ serve(async (req) => {
         .single();
 
       if (insertError) {
-        console.error('Credits init error:', insertError);
         return new Response(
           JSON.stringify({ error: 'Unable to initialize credits' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -76,7 +100,6 @@ serve(async (req) => {
       .eq('user_id', user.id);
 
     if (deductError) {
-      console.error('Credit deduction error:', deductError);
       return new Response(
         JSON.stringify({ error: 'Failed to deduct credit. Please try again.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -114,7 +137,6 @@ Return ONLY valid JSON with this structure:
 
     if (!response.ok) {
       const error = await response.text();
-      console.error('AI API error:', response.status, error);
       
       if (response.status === 429) {
         return new Response(
@@ -134,7 +156,6 @@ Return ONLY valid JSON with this structure:
     });
 
   } catch (error) {
-    console.error('Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: errorMessage }),
