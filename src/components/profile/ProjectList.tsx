@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Trash2, Download, Calendar } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { useProjects } from "@/hooks/useProjects";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -14,61 +16,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-interface Project {
-  id: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
-  html_content: string | null;
-  prompt: string | null;
-}
+import type { Project } from "@/lib/types";
 
 export const ProjectList = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { projects, isLoading, error, deleteProject } = useProjects();
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("updated_at", { ascending: false });
-
-      if (error) throw error;
-      setProjects(data || []);
-    } catch (error: any) {
-      toast.error("Failed to load projects");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      setProjects(projects.filter(p => p.id !== id));
-      toast.success("Project deleted successfully");
-    } catch (error: any) {
-      toast.error("Failed to delete project");
-    } finally {
-      setDeleteId(null);
-    }
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    await deleteProject.mutateAsync(deleteId);
+    setDeleteId(null);
   };
 
   const handleDownload = (project: Project) => {
@@ -89,15 +46,19 @@ export const ProjectList = () => {
     toast.success("Project downloaded");
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex justify-center py-8">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
-  if (projects.length === 0) {
+  if (error) {
+    return <ErrorMessage message="Failed to load projects. Please try again." />;
+  }
+
+  if (!projects || projects.length === 0) {
     return (
       <Card className="p-12 text-center">
         <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
@@ -170,7 +131,7 @@ export const ProjectList = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteId && handleDelete(deleteId)}
+              onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

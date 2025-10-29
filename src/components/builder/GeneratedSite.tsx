@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import type { StoreData } from "./ProductEditor";
+import type { StoreData, Customization } from "@/lib/types";
 
 interface GeneratedSiteProps {
-  customization?: {
-    primaryColor?: string;
-    accentColor?: string;
-    font?: string;
-    layout?: string;
-    paymentsEnabled?: boolean;
-  };
+  customization?: Customization;
   storeData?: StoreData;
 }
 

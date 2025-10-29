@@ -1,27 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { PromptInput } from "@/components/builder/PromptInput";
 import { PreviewPanel } from "@/components/builder/PreviewPanel";
 import { CustomizationPanel } from "@/components/builder/CustomizationPanel";
-import { GeneratedSite } from "@/components/builder/GeneratedSite";
 import { ModelSelector } from "@/components/builder/ModelSelector";
 import { TemplateSelector } from "@/components/builder/TemplateSelector";
+import { CreditsDisplay } from "@/components/builder/CreditsDisplay";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ArrowLeft, Download, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useProjects } from "@/hooks/useProjects";
+import { useCredits } from "@/hooks/useCredits";
+import type { StoreData, Customization } from "@/lib/types";
+
+// Lazy load GeneratedSite for better performance
+const GeneratedSite = lazy(() => import("@/components/builder/GeneratedSite").then(module => ({ default: module.GeneratedSite })));
 
 const Builder = () => {
   const navigate = useNavigate();
+  const { createProject } = useProjects();
+  const { refetchCredits } = useCredits();
+  
   const [showTemplates, setShowTemplates] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
-  const [customization, setCustomization] = useState({});
+  const [customization, setCustomization] = useState<Customization>({});
   const [selectedModel, setSelectedModel] = useState("google/gemini-2.5-flash");
   const [generatedHTML, setGeneratedHTML] = useState("");
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [user, setUser] = useState<any>(null);
-  const [storeData, setStoreData] = useState({
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [storeData, setStoreData] = useState<StoreData>({
     storeName: "Your Store Name",
     products: [
       { id: 1, name: "Product 1", description: "Premium quality product description", price: 29.99, images: {} },
@@ -35,6 +47,7 @@ const Builder = () => {
   }, []);
 
   const checkAuth = async () => {
+    setIsAuthChecking(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       toast.error("Please sign in to use the builder");
@@ -42,6 +55,7 @@ const Builder = () => {
       return;
     }
     setUser(session.user);
+    setIsAuthChecking(false);
   };
 
   const handleGenerate = async (prompt: string) => {
@@ -75,8 +89,10 @@ const Builder = () => {
       setIsGenerating(false);
       setHasGenerated(true);
       toast.success("Website generated successfully!");
+      
+      // Refresh credits after generation
+      refetchCredits();
     } catch (error: any) {
-      console.error("Generation error:", error);
       toast.error(error.message || "Failed to generate website");
     } finally {
       setIsGenerating(false);
@@ -117,22 +133,28 @@ const Builder = () => {
   const handleSave = async () => {
     if (!user) return;
 
+    setIsSaving(true);
     try {
-      const { error } = await supabase.from('projects').insert({
-        user_id: user.id,
+      await createProject.mutateAsync({
         name: `Project - ${new Date().toLocaleDateString()}`,
         prompt: currentPrompt,
         customization: customization,
         html_content: generatedHTML,
       });
-
-      if (error) throw error;
-      toast.success("Project saved!");
     } catch (error: any) {
-      console.error("Save error:", error);
-      toast.error("Failed to save project");
+      // Error is handled by the mutation
+    } finally {
+      setIsSaving(false);
     }
   };
+
+  if (isAuthChecking) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen flex-col">
@@ -142,12 +164,23 @@ const Builder = () => {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <h1 className="text-xl font-bold">Website Builder</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">Website Builder</h1>
+          <CreditsDisplay />
+        </div>
         <div className="flex gap-2">
           {hasGenerated && (
             <>
-              <Button variant="outline" onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" />
+              <Button 
+                variant="outline" 
+                onClick={handleSave}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
                 Save
               </Button>
               <Button onClick={handleDownload}>
@@ -190,7 +223,11 @@ const Builder = () => {
             <PreviewPanel
               isGenerating={isGenerating}
               generatedContent={
-                hasGenerated ? <GeneratedSite customization={customization} storeData={storeData} /> : null
+                hasGenerated ? (
+                  <Suspense fallback={<LoadingSpinner size="lg" />}>
+                    <GeneratedSite customization={customization} storeData={storeData} />
+                  </Suspense>
+                ) : null
               }
             />
           </div>

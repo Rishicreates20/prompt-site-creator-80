@@ -6,25 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { X, Upload, Store, Package } from "lucide-react";
-
-export interface ProductImage {
-  front?: string;
-  back?: string;
-  side?: string;
-}
-
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  images: ProductImage;
-}
-
-export interface StoreData {
-  storeName: string;
-  products: Product[];
-}
+import type { Product, ProductImage, StoreData } from "@/lib/types";
+import { productSchema } from "@/lib/validations";
+import { toast } from "sonner";
 
 interface ProductEditorProps {
   storeData: StoreData;
@@ -41,7 +25,15 @@ export const ProductEditor = ({ storeData, onChange }: ProductEditorProps) => {
   const handleProductChange = (index: number, field: keyof Product, value: any) => {
     const newProducts = [...storeData.products];
     newProducts[index] = { ...newProducts[index], [field]: value };
-    onChange({ ...storeData, products: newProducts });
+    
+    // Validate product on change
+    try {
+      productSchema.parse(newProducts[index]);
+      onChange({ ...storeData, products: newProducts });
+    } catch (error: any) {
+      // Only update if it's still a valid partial state
+      onChange({ ...storeData, products: newProducts });
+    }
   };
 
   const handleImageChange = (index: number, angle: keyof ProductImage, file: File) => {

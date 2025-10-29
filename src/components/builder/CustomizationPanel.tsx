@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Palette, Type, Layout, Sparkles, CreditCard } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { MediaUpload } from "./MediaUpload";
-import { ProductEditor, type StoreData } from "./ProductEditor";
+import { ProductEditor } from "./ProductEditor";
+import type { StoreData } from "@/lib/types";
 
 interface CustomizationPanelProps {
   onCustomize: (type: string, value: any) => void;
