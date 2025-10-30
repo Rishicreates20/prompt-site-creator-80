@@ -1,73 +1,125 @@
-# Welcome to your Lovable project
+# ⚡ Prompt-to-Site Builder
 
-## Project info
+*URL*: https://lovable.dev/projects/3a3f1dfa-3d15-435f-834a-3c0def0c34b3
 
-**URL**: https://lovable.dev/projects/3a3f1dfa-3d15-435f-834a-3c0def0c34b3
+Prompt-to-Site Builder is an AI-powered web platform that enables non-technical users to **create, edit, and publish full-featured websites or online stores** simply through natural language prompts.
+Built with **React, TypeScript, Supabase**, and integrated **AI generation**, it empowers creators to launch products, manage content, and customize sites effortlessly.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+* 🧠 **AI-Assisted Website Builder** — Create and customize complete websites from text prompts.
+* 🛒 **Product Management System** — Add, edit, and update store products via an intuitive UI.
+* 🖼️ **Dynamic Image Upload** — Supports product images with live preview and cloud storage.
+* ⚙️ **Hooks-Based Architecture** — Modular React hooks for managing products, builders, and sites.
+* 🔐 **Authentication & Ownership** — Manage user-based stores with secure access.
+* 💾 **Supabase Integration** — Real-time data storage and image hosting.
+* 🌐 **Responsive Design** — Optimized for both mobile and desktop using Tailwind CSS.
+* 🔄 **AI Integration Layer** — Uses LLM APIs for smart content generation.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3a3f1dfa-3d15-435f-834a-3c0def0c34b3) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🧩 Folder Structure
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-Step 1: Clone the repository using the project's Git URL.
-git clone <prompt-site-creator-80>
-
- Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
- Step 3: Install the necessary dependencies.
-npm i
-
-Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/
+│   ├── builder/
+│   │   ├── ProductEditor.tsx
+│   │   ├── ImageUpload.tsx
+│   │   └── index.ts
+│   ├── ui/
+│   └── layout/
+├── lib/
+│   ├── api/
+│   ├── hooks/
+│   ├── types/
+│   └── utils/
+└── styles/
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛠️ Tech Stack
 
-**Use GitHub Codespaces**
+| Category             | Technologies                          |
+| -------------------- | ------------------------------------- |
+| **Frontend**         | React, TypeScript, Tailwind CSS       |
+| **Backend / API**    | Node.js, Supabase, Next.js API Routes |
+| **AI Models**        | OpenAI API / Ollama (Local LLMs)      |
+| **Storage**          | Supabase Storage                      |
+| **State Management** | React Hooks, SWR                      |
+| **Build Tool**       | Vite / Next.js                        |
+| **Version Control**  | Git & GitHub                          |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## ⚙️ Setup Instructions
 
-This project is built with:
+1. **Clone the repository**
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+   ```bash
+   git clone https://github.com/your-username/prompt-to-site.git
+   cd prompt-to-site
+   ```
 
-## How can I deploy this project?
+2. **Install dependencies**
 
-Simply open [Lovable](https://lovable.dev/projects/3a3f1dfa-3d15-435f-834a-3c0def0c34b3) and click on Share -> Publish.
+   ```bash
+   npm install
+   ```
 
-## Can I connect a custom domain to my Lovable project?
+3. **Add your environment variables**
+   Create a `.env` file:
 
-Yes, you can!
+   ```bash
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_KEY=your_supabase_key
+   OPENAI_API_KEY=your_openai_key
+   ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+4. **Run the development server**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production**
+
+   ```bash
+   npm run build
+   npm start
+   ```
+
+---
+
+## 💡 Future Enhancements
+
+* Multi-page AI layout generation
+* Theme customization with prompt styling
+* Drag-and-drop page builder
+* SEO & performance analyzer integration
+
+---
+
+## 🤝 Contributing
+
+Contributions, bug reports, and suggestions are welcome!
+Fork the repo, make your changes, and submit a pull request.
+
+---
+
+## 🧑‍💻 Author
+
+**Rishikesh Sarangi**
+🚀 AI Developer | Web Engineer | Open Source Enthusiast
+📧 [Email Me](mailto:rishikeshsarangi56@gmail.com)
+
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+See the [LICENSE](LICENSE) file for details.
