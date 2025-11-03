@@ -85,10 +85,35 @@ const Builder = () => {
         return;
       }
 
-      setGeneratedHTML(data.content);
+      // Parse the AI-generated content
+      const generatedData = typeof data.content === 'string' 
+        ? JSON.parse(data.content) 
+        : data.content;
+
+      // Apply the generated store data and customization
+      if (generatedData.storeName) {
+        setStoreData({
+          storeName: generatedData.storeName,
+          products: generatedData.products || []
+        });
+      }
+      
+      if (generatedData.customization) {
+        setCustomization(generatedData.customization);
+      }
+
+      // Store the raw response for download/save
+      setGeneratedHTML(JSON.stringify(generatedData, null, 2));
       setIsGenerating(false);
       setHasGenerated(true);
+      
+      // Show success with suggestions if available
       toast.success("Website generated successfully!");
+      if (generatedData.suggestions && generatedData.suggestions.length > 0) {
+        setTimeout(() => {
+          toast.info(`💡 ${generatedData.suggestions[0]}`);
+        }, 1000);
+      }
       
       // Refresh credits after generation
       refetchCredits();

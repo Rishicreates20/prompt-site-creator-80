@@ -44,20 +44,22 @@ export const PromptInput = ({ onGenerate, isGenerating }: PromptInputProps) => {
       <div className="space-y-2">
         <Label className="text-sm font-medium">Describe Your E-Commerce Website</Label>
         <Textarea
-          placeholder="e.g., A modern online store selling handmade jewelry with a minimalist design, featuring a hero section, product gallery, and contact form..."
+          placeholder="e.g., A premium online store selling artisan coffee beans with a warm, earthy design. Include 4-5 different coffee varieties from around the world, with detailed descriptions about origin and flavor notes. Use brown and cream colors with a modern font."
           value={prompt}
           onChange={(e) => handleChange(e.target.value)}
-          className="min-h-32 resize-none"
+          className="min-h-36 resize-none"
           disabled={isGenerating}
           maxLength={MAX_PROMPT_LENGTH}
         />
-        <div className="flex items-center justify-between text-xs">
-          <p className="text-muted-foreground">
-            Be specific about your products, style, and features
-          </p>
-          <span className={prompt.length > MAX_PROMPT_LENGTH * 0.9 ? "text-destructive" : "text-muted-foreground"}>
-            {prompt.length}/{MAX_PROMPT_LENGTH}
-          </span>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-xs">
+            <p className="text-muted-foreground">
+              Include: product type, quantity, style, and color preferences
+            </p>
+            <span className={prompt.length > MAX_PROMPT_LENGTH * 0.9 ? "text-destructive" : "text-muted-foreground"}>
+              {prompt.length}/{MAX_PROMPT_LENGTH}
+            </span>
+          </div>
         </div>
         {error && (
           <div className="flex items-center gap-2 text-sm text-destructive">
@@ -88,17 +90,17 @@ export const PromptInput = ({ onGenerate, isGenerating }: PromptInputProps) => {
 
       {!isGenerating && (
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Try these examples:</p>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-xs text-muted-foreground">Quick start examples:</p>
+          <div className="flex flex-col gap-2">
             {[
-              "Luxury fashion boutique",
-              "Organic skincare store",
-              "Tech gadgets shop"
-            ].map((example) => (
+              "Modern tech accessories store with 5 products (phone cases, chargers, earbuds). Use sleek black and blue colors with a bold layout.",
+              "Organic skincare boutique featuring 4 natural products. Earthy green and cream tones, elegant minimalist design.",
+              "Vintage vinyl records shop with 6 classic albums. Retro orange and brown colors, playful retro font style."
+            ].map((example, idx) => (
               <button
-                key={example}
+                key={idx}
                 onClick={() => setPrompt(example)}
-                className="rounded-full border border-border bg-card px-3 py-1 text-xs transition-colors hover:border-primary hover:bg-primary/10"
+                className="rounded-lg border border-border bg-card px-3 py-2 text-left text-xs transition-colors hover:border-primary hover:bg-primary/10"
               >
                 {example}
               </button>

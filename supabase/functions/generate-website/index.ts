@@ -111,13 +111,38 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const systemPrompt = `You are an expert web designer. Generate HTML/CSS for an e-commerce website based on the user's description. 
-Return ONLY valid JSON with this structure:
+    const systemPrompt = `You are an expert e-commerce website designer and developer. Generate a comprehensive JSON response for an e-commerce store.
+
+IMPORTANT: Return ONLY valid JSON in this EXACT structure (no markdown, no code blocks):
 {
-  "html": "complete HTML code",
-  "colors": {"primary": "#hex", "accent": "#hex"},
-  "suggestions": ["suggestion1", "suggestion2"]
-}`;
+  "storeName": "Store Name Here",
+  "products": [
+    {
+      "id": 1,
+      "name": "Product Name",
+      "description": "Detailed product description (50-100 chars)",
+      "price": 99.99,
+      "images": {}
+    }
+  ],
+  "customization": {
+    "primaryColor": "#hexcolor",
+    "accentColor": "#hexcolor",
+    "font": "modern",
+    "layout": "minimal"
+  },
+  "suggestions": ["Improvement suggestion 1", "Improvement suggestion 2", "Improvement suggestion 3"]
+}
+
+Guidelines:
+- Generate 3-6 products that match the user's description
+- Make product descriptions compelling and detailed
+- Choose prices that fit the product category
+- Select appropriate colors that match the store theme
+- Font options: "modern", "classic", or "playful"
+- Layout options: "minimal", "bold", or "elegant"
+- Provide 3-5 actionable improvement suggestions
+- Ensure all product names and descriptions are relevant to the prompt`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -149,11 +174,39 @@ Return ONLY valid JSON with this structure:
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    let content = data.choices[0].message.content;
 
-    return new Response(JSON.stringify({ content }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Parse the AI response to extract JSON
+    try {
+      // Remove markdown code blocks if present
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      
+      // Validate it's proper JSON
+      const parsedContent = JSON.parse(content);
+      
+      // Ensure required fields exist
+      if (!parsedContent.storeName || !parsedContent.products || !Array.isArray(parsedContent.products)) {
+        throw new Error('Invalid response structure');
+      }
+
+      return new Response(JSON.stringify({ 
+        content: parsedContent,
+        success: true 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', parseError);
+      
+      // Return a fallback response with error details
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to parse AI response. Please try again with a different prompt.',
+          details: parseError instanceof Error ? parseError.message : 'Unknown error'
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
