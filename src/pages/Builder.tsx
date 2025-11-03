@@ -75,12 +75,16 @@ const Builder = () => {
       });
 
       if (error) {
-        if (error.message?.includes("Insufficient credits")) {
+        const errorMsg = error.message || '';
+        const errorContext = JSON.stringify(error);
+        
+        if (errorMsg.includes("Insufficient credits") || errorContext.includes("Insufficient credits") || error.status === 402) {
           toast.error("You've run out of daily credits. They reset tomorrow!");
-        } else if (error.message?.includes("Rate limit")) {
+          refetchCredits(); // Refresh credits display
+        } else if (errorMsg.includes("Rate limit") || error.status === 429) {
           toast.error("Too many requests. Please wait a moment.");
         } else {
-          throw error;
+          toast.error(errorMsg || "Failed to generate website. Please try again.");
         }
         return;
       }
