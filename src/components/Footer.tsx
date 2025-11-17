@@ -52,7 +52,7 @@ export const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-          <p>© 2024 PromptSite. All rights reserved.</p>
+          <p>© 2025 Fusion4. All rights reserved.</p>
         </div>
       </div>
     </footer>
