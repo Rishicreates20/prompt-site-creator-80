@@ -1,6 +1,6 @@
 # ⚡ Prompt-to-Site Builder
 
-*URL*: https://lovable.dev/projects/3a3f1dfa-3d15-435f-834a-3c0def0c34b3
+*URL*: https://prompt-site-creator-80-48667vacy-rishikesh-sararngis-projects.vercel.app
 
 Prompt-to-Site Builder is an AI-powered web platform that enables non-technical users to **create, edit, and publish full-featured websites or online stores** simply through natural language prompts.
 Built with **React, TypeScript, Supabase**, and integrated **AI generation**, it empowers creators to launch products, manage content, and customize sites effortlessly.
