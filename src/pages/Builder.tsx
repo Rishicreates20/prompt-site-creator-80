@@ -7,7 +7,7 @@ import { TemplateSelector } from "@/components/builder/TemplateSelector";
 import { CreditsDisplay } from "@/components/builder/CreditsDisplay";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { ArrowLeft, Download, Save } from "lucide-react";
+import { ArrowLeft, Download, Save, RotateCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -235,6 +235,22 @@ const Builder = () => {
           <div className="w-80 border-r border-border/40 overflow-y-auto p-6 space-y-6">
             <ModelSelector value={selectedModel} onChange={setSelectedModel} />
             <PromptInput onGenerate={handleGenerate} isGenerating={isGenerating} />
+            
+            {hasGenerated && currentPrompt && (
+              <Button
+                variant="outline"
+                onClick={() => handleGenerate(currentPrompt)}
+                disabled={isGenerating}
+                className="w-full"
+              >
+                {isGenerating ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <RotateCw className="mr-2 h-4 w-4" />
+                )}
+                Regenerate
+              </Button>
+            )}
             
             {hasGenerated && (
               <div className="border-t border-border/40 pt-6">
