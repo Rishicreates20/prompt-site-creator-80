@@ -185,10 +185,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      reset_daily_credits: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      reset_daily_credits: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
