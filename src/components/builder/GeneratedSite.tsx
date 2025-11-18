@@ -19,6 +19,10 @@ export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) 
     { id: 3, name: "Product 3", description: "Premium quality product description", price: 89.97, images: {} },
   ];
 
+  // Header and Footer data
+  const headerData = customization?.header;
+  const footerData = customization?.footer;
+
   const [selectedImages, setSelectedImages] = useState<Record<number, keyof typeof products[0]["images"]>>({});
 
   const handlePayment = (productId: number, productName: string, price: number) => {
@@ -27,18 +31,32 @@ export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) 
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
+      {/* Header Section */}
+      {headerData?.showLogo && (
+        <div className="px-8 py-4 border-b">
+          <h2 className="text-xl font-bold">{headerData.logoText || storeName}</h2>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div 
         className="relative px-8 py-20 text-center"
         style={{ 
-          background: `linear-gradient(135deg, ${primaryColor}15, ${accentColor}15)`,
+          backgroundColor: headerData?.bgColor || `transparent`,
+          background: headerData?.bgColor ? undefined : `linear-gradient(135deg, ${primaryColor}15, ${accentColor}15)`,
         }}
       >
-        <h1 className="mb-4 text-5xl font-bold" style={{ color: primaryColor }}>
-          {storeName}
+        <h1 
+          className="mb-4 text-5xl font-bold" 
+          style={{ color: headerData?.bgColor ? 'white' : primaryColor }}
+        >
+          {headerData?.text || storeName}
         </h1>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
-          Discover our curated collection of premium products
+        <p 
+          className="mx-auto mb-8 max-w-2xl text-lg"
+          style={{ color: headerData?.bgColor ? 'rgba(255,255,255,0.9)' : undefined }}
+        >
+          {headerData?.subtext || "Discover our curated collection of premium products"}
         </p>
         <Button 
           size="lg" 
@@ -165,11 +183,36 @@ export const GeneratedSite = ({ customization, storeData }: GeneratedSiteProps) 
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 bg-gray-50 px-8 py-8 text-center">
-        <p className="text-sm text-gray-600">
-          © 2024 Your Store. All rights reserved.
-        </p>
-      </div>
+      <footer 
+        className="border-t px-8 py-8 text-center text-sm"
+        style={{ 
+          backgroundColor: footerData?.bgColor || '#f9fafb',
+          color: footerData?.bgColor ? 'white' : '#6b7280'
+        }}
+      >
+        {footerData?.text && (
+          <p className="mb-4">{footerData.text}</p>
+        )}
+        {footerData?.links && footerData.links.length > 0 && (
+          <div className="flex justify-center gap-4 mb-4 flex-wrap">
+            {footerData.links.map((link, index) => (
+              <a key={index} href="#" className="hover:underline">
+                {link}
+              </a>
+            ))}
+          </div>
+        )}
+        {footerData?.showSocials && (
+          <div className="flex justify-center gap-4 mb-4">
+            <span>📘</span>
+            <span>🐦</span>
+            <span>📷</span>
+          </div>
+        )}
+        {!footerData && (
+          <p>© 2024 {storeName}. All rights reserved.</p>
+        )}
+      </footer>
     </div>
   );
 };
