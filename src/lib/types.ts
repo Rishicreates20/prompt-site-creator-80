@@ -19,6 +19,21 @@ export interface StoreData {
   products: Product[];
 }
 
+export interface HeaderData {
+  text?: string;
+  subtext?: string;
+  bgColor?: string;
+  showLogo?: boolean;
+  logoText?: string;
+}
+
+export interface FooterData {
+  text?: string;
+  links?: string[];
+  bgColor?: string;
+  showSocials?: boolean;
+}
+
 export interface Customization {
   primaryColor?: string;
   accentColor?: string;
@@ -27,6 +42,12 @@ export interface Customization {
   paymentsEnabled?: boolean;
   media?: File[];
   addSection?: string;
+  header?: HeaderData;
+  footer?: FooterData;
+  customFont?: {
+    fontFamily?: string;
+    fontUrl?: string;
+  };
 }
 
 export interface Project {

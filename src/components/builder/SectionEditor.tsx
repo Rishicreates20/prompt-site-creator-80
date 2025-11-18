@@ -5,47 +5,50 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Layout } from "lucide-react";
-import { toast } from "sonner";
 
 interface SectionEditorProps {
   title: string;
   onUpdate: (section: string, content: any) => void;
+  headerData?: any;
+  footerData?: any;
 }
 
-export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
-  const [headerText, setHeaderText] = useState("");
-  const [headerSubtext, setHeaderSubtext] = useState("");
-  const [headerBgColor, setHeaderBgColor] = useState("#1a1a1a");
-  const [showLogo, setShowLogo] = useState(true);
-  const [logoText, setLogoText] = useState("");
+export const SectionEditor = ({ title, onUpdate, headerData, footerData }: SectionEditorProps) => {
+  const [headerText, setHeaderText] = useState(headerData?.text || "");
+  const [headerSubtext, setHeaderSubtext] = useState(headerData?.subtext || "");
+  const [headerBgColor, setHeaderBgColor] = useState(headerData?.bgColor || "#1a1a1a");
+  const [showLogo, setShowLogo] = useState(headerData?.showLogo ?? true);
+  const [logoText, setLogoText] = useState(headerData?.logoText || "");
   
-  const [footerText, setFooterText] = useState("");
-  const [footerLinks, setFooterLinks] = useState("");
-  const [footerBgColor, setFooterBgColor] = useState("#0a0a0a");
-  const [showSocials, setShowSocials] = useState(true);
+  const [footerText, setFooterText] = useState(footerData?.text || "");
+  const [footerLinks, setFooterLinks] = useState(footerData?.links?.join(', ') || "");
+  const [footerBgColor, setFooterBgColor] = useState(footerData?.bgColor || "#0a0a0a");
+  const [showSocials, setShowSocials] = useState(footerData?.showSocials ?? true);
 
-  const handleHeaderUpdate = () => {
+  // Real-time update function
+  const updateHeader = (updates: any) => {
     const headerData = {
       text: headerText,
       subtext: headerSubtext,
       bgColor: headerBgColor,
       showLogo,
       logoText,
+      ...updates
     };
     onUpdate("header", headerData);
-    toast.success("Header updated");
   };
 
-  const handleFooterUpdate = () => {
+  const updateFooter = (updates: any) => {
     const footerData = {
       text: footerText,
       links: footerLinks.split(',').map(link => link.trim()).filter(Boolean),
       bgColor: footerBgColor,
       showSocials,
+      ...updates
     };
     onUpdate("footer", footerData);
-    toast.success("Footer updated");
   };
+
 
   return (
     <div className="space-y-6">
@@ -63,7 +66,10 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Input
             placeholder="Enter header title"
             value={headerText}
-            onChange={(e) => setHeaderText(e.target.value)}
+            onChange={(e) => {
+              setHeaderText(e.target.value);
+              updateHeader({ text: e.target.value });
+            }}
           />
         </div>
 
@@ -72,7 +78,10 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Input
             placeholder="Enter subtitle"
             value={headerSubtext}
-            onChange={(e) => setHeaderSubtext(e.target.value)}
+            onChange={(e) => {
+              setHeaderSubtext(e.target.value);
+              updateHeader({ subtext: e.target.value });
+            }}
           />
         </div>
 
@@ -81,14 +90,23 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Input
             type="color"
             value={headerBgColor}
-            onChange={(e) => setHeaderBgColor(e.target.value)}
+            onChange={(e) => {
+              setHeaderBgColor(e.target.value);
+              updateHeader({ bgColor: e.target.value });
+            }}
             className="h-10"
           />
         </div>
 
         <div className="flex items-center justify-between">
           <Label className="text-xs text-muted-foreground">Show Logo</Label>
-          <Switch checked={showLogo} onCheckedChange={setShowLogo} />
+          <Switch 
+            checked={showLogo} 
+            onCheckedChange={(checked) => {
+              setShowLogo(checked);
+              updateHeader({ showLogo: checked });
+            }}
+          />
         </div>
 
         {showLogo && (
@@ -97,14 +115,13 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
             <Input
               placeholder="Enter logo text"
               value={logoText}
-              onChange={(e) => setLogoText(e.target.value)}
+              onChange={(e) => {
+                setLogoText(e.target.value);
+                updateHeader({ logoText: e.target.value });
+              }}
             />
           </div>
         )}
-
-        <Button onClick={handleHeaderUpdate} className="w-full" size="sm">
-          Update Header
-        </Button>
       </div>
 
       {/* Footer Section */}
@@ -116,7 +133,10 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Textarea
             placeholder="Enter footer text/copyright"
             value={footerText}
-            onChange={(e) => setFooterText(e.target.value)}
+            onChange={(e) => {
+              setFooterText(e.target.value);
+              updateFooter({ text: e.target.value });
+            }}
             rows={2}
           />
         </div>
@@ -126,7 +146,10 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Input
             placeholder="About, Contact, Privacy, Terms"
             value={footerLinks}
-            onChange={(e) => setFooterLinks(e.target.value)}
+            onChange={(e) => {
+              setFooterLinks(e.target.value);
+              updateFooter({ links: e.target.value.split(',').map(link => link.trim()).filter(Boolean) });
+            }}
           />
         </div>
 
@@ -135,19 +158,24 @@ export const SectionEditor = ({ title, onUpdate }: SectionEditorProps) => {
           <Input
             type="color"
             value={footerBgColor}
-            onChange={(e) => setFooterBgColor(e.target.value)}
+            onChange={(e) => {
+              setFooterBgColor(e.target.value);
+              updateFooter({ bgColor: e.target.value });
+            }}
             className="h-10"
           />
         </div>
 
         <div className="flex items-center justify-between">
           <Label className="text-xs text-muted-foreground">Show Social Icons</Label>
-          <Switch checked={showSocials} onCheckedChange={setShowSocials} />
+          <Switch 
+            checked={showSocials} 
+            onCheckedChange={(checked) => {
+              setShowSocials(checked);
+              updateFooter({ showSocials: checked });
+            }}
+          />
         </div>
-
-        <Button onClick={handleFooterUpdate} className="w-full" size="sm">
-          Update Footer
-        </Button>
       </div>
     </div>
   );

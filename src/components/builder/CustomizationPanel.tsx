@@ -14,9 +14,10 @@ interface CustomizationPanelProps {
   onCustomize: (type: string, value: any) => void;
   storeData: StoreData;
   onStoreDataChange: (data: StoreData) => void;
+  customization: any;
 }
 
-export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange }: CustomizationPanelProps) => {
+export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange, customization }: CustomizationPanelProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const handleMediaUpload = (files: File[]) => {
@@ -80,6 +81,8 @@ export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange }
       {/* Header & Footer Editor */}
       <SectionEditor 
         title="Header & Footer"
+        headerData={customization?.header}
+        footerData={customization?.footer}
         onUpdate={(section, content) => {
           onCustomize(section, content);
         }}

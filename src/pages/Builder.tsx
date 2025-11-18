@@ -258,6 +258,7 @@ const Builder = () => {
                   onCustomize={handleCustomize}
                   storeData={storeData}
                   onStoreDataChange={setStoreData}
+                  customization={customization}
                 />
               </div>
             )}
