@@ -6,6 +6,8 @@ import { Palette, Type, Layout, Sparkles, CreditCard } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { MediaUpload } from "./MediaUpload";
 import { ProductEditor } from "./ProductEditor";
+import { FontCustomization } from "./FontCustomization";
+import { SectionEditor } from "./SectionEditor";
 import type { StoreData } from "@/lib/types";
 
 interface CustomizationPanelProps {
@@ -68,36 +70,20 @@ export const CustomizationPanel = ({ onCustomize, storeData, onStoreDataChange }
         </div>
       </div>
 
-      {/* Typography */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Type className="h-4 w-4 text-primary" />
-          <Label className="text-sm font-medium">Typography</Label>
-        </div>
-        <div className="space-y-2">
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={() => onCustomize("font", "modern")}
-          >
-            Modern Sans-Serif
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={() => onCustomize("font", "classic")}
-          >
-            Classic Serif
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            onClick={() => onCustomize("font", "playful")}
-          >
-            Playful Rounded
-          </Button>
-        </div>
-      </div>
+      {/* Font Customization */}
+      <FontCustomization 
+        onFontChange={(fontFamily, fontUrl) => {
+          onCustomize("customFont", { fontFamily, fontUrl });
+        }}
+      />
+
+      {/* Header & Footer Editor */}
+      <SectionEditor 
+        title="Header & Footer"
+        onUpdate={(section, content) => {
+          onCustomize(section, content);
+        }}
+      />
 
       {/* Layout */}
       <div className="space-y-3">
