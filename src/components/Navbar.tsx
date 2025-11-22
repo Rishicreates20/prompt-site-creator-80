@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Sparkles, LogOut, User as UserIcon, Coins } from "lucide-react";
+import { Sparkles, LogOut, User as UserIcon, Coins, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,12 +18,14 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [credits, setCredits] = useState<number>(0);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadCredits(session.user.id);
+        checkAdminStatus(session.user.id);
       }
     });
 
@@ -33,6 +35,9 @@ export const Navbar = () => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadCredits(session.user.id);
+        checkAdminStatus(session.user.id);
+      } else {
+        setIsAdmin(false);
       }
     });
 
@@ -51,6 +56,21 @@ export const Navbar = () => {
       setCredits(data?.daily_credits || 0);
     } catch (error) {
       console.error("Error loading credits:", error);
+    }
+  };
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+
+      if (!error && data) {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error("Error checking admin status:", error);
     }
   };
 
@@ -99,6 +119,15 @@ export const Navbar = () => {
                       <UserIcon className="mr-2 h-4 w-4" />
                       Profile Settings
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate("/admin")}>
+                          <Shield className="mr-2 h-4 w-4" />
+                          Admin Panel
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
