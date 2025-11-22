@@ -188,7 +188,7 @@ export type Database = {
       reset_daily_credits: { Args: never; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "subscriber"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -316,7 +316,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "subscriber"],
     },
   },
 } as const
