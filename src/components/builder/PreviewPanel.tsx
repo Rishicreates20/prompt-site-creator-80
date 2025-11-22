@@ -1,5 +1,6 @@
-import { Monitor, Smartphone, Tablet } from "lucide-react";
+import { Monitor, Smartphone, Tablet, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
 
 interface PreviewPanelProps {
@@ -18,6 +19,7 @@ interface ViewportConfig {
 
 export const PreviewPanel = ({ isGenerating, generatedContent }: PreviewPanelProps) => {
   const [viewport, setViewport] = useState<ViewportSize>("mobile");
+  const [zoom, setZoom] = useState<number>(100);
 
   const viewportSizes: Record<ViewportSize, ViewportConfig> = {
     mobile: {
@@ -41,11 +43,12 @@ export const PreviewPanel = ({ isGenerating, generatedContent }: PreviewPanelPro
   };
 
   const currentViewport = viewportSizes[viewport];
+  const zoomScale = zoom / 100;
 
   return (
     <div className="flex h-full flex-col">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-border/40 bg-card/50 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border/40 bg-card/50 px-4 py-3 gap-4">
         <div className="flex items-center gap-2">
           <Button
             variant={viewport === "mobile" ? "default" : "ghost"}
@@ -76,17 +79,35 @@ export const PreviewPanel = ({ isGenerating, generatedContent }: PreviewPanelPro
           </Button>
         </div>
 
-        <div className="text-sm text-muted-foreground">{currentViewport.label}</div>
+        <div className="flex items-center gap-3 min-w-0 flex-1 max-w-xs">
+          <ZoomOut className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <Slider
+            value={[zoom]}
+            onValueChange={(value) => setZoom(value[0])}
+            min={25}
+            max={150}
+            step={5}
+            className="flex-1"
+          />
+          <ZoomIn className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-sm text-muted-foreground font-mono w-12 text-right flex-shrink-0">
+            {zoom}%
+          </span>
+        </div>
+
+        <div className="text-sm text-muted-foreground whitespace-nowrap">{currentViewport.label}</div>
       </div>
 
       {/* Preview Area */}
       <div className="flex-1 overflow-auto bg-muted/20 p-4 sm:p-8 flex items-center justify-center">
         <div 
-          className={`transition-all duration-300 ${currentViewport.scale} mx-auto`}
+          className="transition-all duration-300 mx-auto"
           style={{
             width: currentViewport.width,
             height: viewport !== "desktop" ? currentViewport.height : "calc(100vh - 180px)",
-            maxWidth: "100%"
+            maxWidth: "100%",
+            transform: `scale(${zoomScale})`,
+            transformOrigin: "center center"
           }}
         >
           <div className="rounded-lg border border-border/40 bg-background shadow-2xl overflow-hidden h-full">
